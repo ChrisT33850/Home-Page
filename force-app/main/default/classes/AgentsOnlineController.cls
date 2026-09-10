@@ -12,10 +12,8 @@ public with sharing class AgentsOnlineController {
         List<QueueWithMembers> result = new List<QueueWithMembers>();
         
         try {
-            // Récupérer les queues auxquelles l'utilisateur appartient
             List<GroupMember> members = [
-                SELECT GroupId, Group.Name, Group.Id, 
-                       UserOrGroupId
+                SELECT GroupId, Group.Name, Group.Id, UserOrGroupId
                 FROM GroupMember
                 WHERE UserOrGroupId = :UserInfo.getUserId()
                 AND Group.Type = 'Queue'
@@ -32,10 +30,8 @@ public with sharing class AgentsOnlineController {
                 }
             }
             
-            // Pour chaque queue, récupérer les membres
             List<GroupMember> queueMembers = [
-                SELECT GroupId, UserOrGroupId, User.Id, User.Name, 
-                       User.SmallPhotoUrl, User.FirstName
+                SELECT GroupId, UserOrGroupId, User.Id, User.Name, User.SmallPhotoUrl, User.FirstName
                 FROM GroupMember
                 WHERE GroupId IN :queueIds
                 AND User.IsActive = true
@@ -59,7 +55,6 @@ public with sharing class AgentsOnlineController {
                 queueAgents.get(member.GroupId).add(agent);
             }
             
-            // Construire la réponse
             for (Id queueId : queueIds) {
                 QueueWithMembers qwm = new QueueWithMembers();
                 qwm.queueId = queueId;
@@ -75,26 +70,102 @@ public with sharing class AgentsOnlineController {
         return result;
     }
 
-    /**
-     * Récupère les statuts de présence Omnichannel des agents
-     */
     @AuraEnabled
     public static List<AgentPresence> getAgentsPresenceStatus(List<String> userIds) {
         List<AgentPresence> result = new List<AgentPresence>();
         
         try {
-            // Récupérer les statuts de présence des utilisateurs
             List<ServicePresenceUserStatus> presences = [
-                SELECT Id, UserId, ServicePresenceStatusId, 
-                       ServicePresenceStatus.Label
+                SELECT Id, UserId, ServicePresenceStatusId, ServicePresenceStatus.Label
                 FROM ServicePresenceUserStatus
                 WHERE UserId IN :userIds
                 ORDER BY UserId
             ];
             
-            // Créer une map pour éviter les doublons (garder le dernier)
             Map<String, AgentPresence> presenceMap = new Map<String, AgentPresence>();
             
             for (ServicePresenceUserStatus presence : presences) {
                 AgentPresence ap = new AgentPresence();
-                ap.userId
+                ap.userId = presence.UserId;
+                ap.statusId = presence.ServicePresenceStatusId;
+                ap.statusName = presence.ServicePresenceStatus.Label;
+                presenceMap.put(presence.UserId, ap);
+            }
+            
+            for (String userId : userIds) {
+                if (!presenceMap.containsKey(userId)) {
+                    AgentPresence ap = new AgentPresence();
+                    ap.userId = userId;
+                    ap.statusId = null;
+                    ap.statusName = 'Offline';
+                    presenceMap.put(userId, ap);
+                }
+            }
+            
+            result.addAll(presenceMap.values());
+            
+        } catch (Exception e) {
+            System.debug('Error getting presence status: ' + e.getMessage());
+            for (String userId : userIds) {
+                AgentPresence ap = new AgentPresence();
+                ap.userId = userId;
+                ap.statusId = null;
+                ap.statusName = 'Offline';
+                result.add(ap);
+            }
+        }
+        
+        return result;
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static List<StatusOption> getOmnichanelPresenceStatuses() {
+        List<StatusOption> result = new List<StatusOption>();
+        
+        try {
+            List<ServicePresenceStatus> statuses = [
+                SELECT Id, Label
+                FROM ServicePresenceStatus
+                WHERE IsActive = true
+                ORDER BY Label
+            ];
+            
+            for (ServicePresenceStatus status : statuses) {
+                StatusOption so = new StatusOption();
+                so.Id = status.Id;
+                so.Label = status.Label;
+                result.add(so);
+            }
+            
+        } catch (Exception e) {
+            System.debug('Error getting presence statuses: ' + e.getMessage());
+        }
+        
+        return result;
+    }
+
+    public class QueueWithMembers {
+        @AuraEnabled public Id queueId { get; set; }
+        @AuraEnabled public String queueName { get; set; }
+        @AuraEnabled public List<Agent> members { get; set; }
+    }
+    
+    public class Agent {
+        @AuraEnabled public String userId { get; set; }
+        @AuraEnabled public String name { get; set; }
+        @AuraEnabled public String firstName { get; set; }
+        @AuraEnabled public String photoUrl { get; set; }
+        @AuraEnabled public String initials { get; set; }
+    }
+    
+    public class AgentPresence {
+        @AuraEnabled public String userId { get; set; }
+        @AuraEnabled public String statusId { get; set; }
+        @AuraEnabled public String statusName { get; set; }
+    }
+    
+    public class StatusOption {
+        @AuraEnabled public String Id { get; set; }
+        @AuraEnabled public String Label { get; set; }
+    }
+}
