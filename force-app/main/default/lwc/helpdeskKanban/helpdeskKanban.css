@@ -1,0 +1,218 @@
+:host {
+    --slds-c-button-color-background: #0070d2;
+    --slds-c-button-color-border: #0070d2;
+}
+
+.slds-page-header_container {
+    padding: 1.5rem;
+}
+
+/* Queues Container */
+.queues-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.queue-card {
+    background: linear-gradient(135deg, #0070d2 0%, #005fb2 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.queue-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.queue-name {
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.queue-count {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.queue-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.9;
+}
+
+/* Kanban Board */
+.kanban-board {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.kanban-column {
+    background-color: #f3f3f3;
+    border-radius: 8px;
+    padding: 1rem;
+    min-height: 600px;
+    border: 2px solid #e8e6df;
+}
+
+.kanban-column-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #d3d1c7;
+    font-weight: 600;
+    color: #16325c;
+}
+
+.kanban-status-icon {
+    font-size: 1.25rem;
+}
+
+.kanban-status-name {
+    flex: 1;
+}
+
+.kanban-count {
+    background-color: #0070d2;
+    color: white;
+    border-radius: 20px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.kanban-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* Kanban Card */
+.kanban-card {
+    background-color: white;
+    border: 1px solid #d3d1c7;
+    border-radius: 6px;
+    padding: 0.75rem;
+    cursor: move;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.kanban-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.kanban-card[draggable="true"] {
+    cursor: grab;
+}
+
+.kanban-card[draggable="true"]:active {
+    cursor: grabbing;
+    opacity: 0.7;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    gap: 0.5rem;
+}
+
+.case-number {
+    font-weight: 700;
+    color: #0070d2;
+    font-size: 0.875rem;
+}
+
+.card-priority {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    white-space: nowrap;
+}
+
+.card-priority[data-priority="High"] {
+    background-color: #ea001e;
+    color: white;
+}
+
+.card-priority[data-priority="Medium"] {
+    background-color: #ff9f1c;
+    color: white;
+}
+
+.card-priority[data-priority="Low"] {
+    background-color: #04844b;
+    color: white;
+}
+
+.card-subject {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #16325c;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    color: #666;
+    padding-top: 0.5rem;
+    border-top: 1px solid #e8e6df;
+}
+
+.card-account {
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.card-date {
+    white-space: nowrap;
+    margin-left: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .kanban-board {
+        grid-template-columns: 1fr;
+    }
+    
+    .queues-container {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+}
+
+/* Section */
+.slds-section__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #16325c;
+    padding: 1rem 0;
+}
